@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NodeOps CreateOS Skills Challenge</title>
+  <style>
+    :root {
+      --bg: #0b0e14;
+      --surface: #121820;
+      --surface2: #1a2430;
+      --border: #2a3a4a;
+      --text: #e8edf2;
+      --text-dim: #8899aa;
+      --accent: #5dade2;
+      --accent2: #a78bfa;
+      --green: #4ade80;
+      --orange: #fb923c;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+    .container { max-width: 960px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+    header { text-align: center; padding: 3rem 0 2rem; }
+    header h1 {
+      font-size: 2.2rem;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    header p { color: var(--text-dim); margin-top: 0.5rem; font-size: 1.05rem; }
+    header .badge {
+      display: inline-block;
+      background: var(--accent);
+      color: #000;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.25rem 0.75rem;
+      border-radius: 999px;
+      margin-top: 0.75rem;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem 2rem;
+      margin-bottom: 1.5rem;
+      transition: border-color 0.2s;
+    }
+    .card:hover { border-color: var(--accent); }
+    .card h2 {
+      font-size: 1.3rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .card h2 .num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #000;
+      font-size: 0.8rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .card p, .card li { color: var(--text-dim); font-size: 0.95rem; }
+    .card ul { list-style: none; padding: 0; }
+    .card li {
+      padding: 0.35rem 0;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .card li::before { content: "▸"; color: var(--accent); }
+    .card a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .card a:hover { text-decoration: underline; }
+
+    .status-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 0.75rem;
+      margin: 1rem 0;
+    }
+    .status-item {
+      background: var(--surface2);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      font-size: 0.85rem;
+    }
+    .status-item .label { color: var(--text-dim); }
+    .status-item .value { color: var(--green); font-weight: 600; }
+    .status-item .value.fail { color: var(--orange); }
+
+    .result-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      font-size: 0.85rem;
+    }
+    .result-table th {
+      text-align: left;
+      color: var(--text-dim);
+      font-weight: 500;
+      padding: 0.5rem 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .result-table td {
+      padding: 0.5rem 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .result-table .pass { color: var(--green); }
+    .result-table .fail { color: var(--orange); }
+
+    .arch-diagram {
+      background: var(--surface2);
+      border-radius: 8px;
+      padding: 1.25rem;
+      margin: 1rem 0;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 0.82rem;
+      line-height: 1.8;
+      white-space: pre;
+      overflow-x: auto;
+      color: var(--text-dim);
+    }
+    .arch-diagram .hl { color: var(--accent); }
+    .arch-diagram .hl2 { color: var(--accent2); }
+    .arch-diagram .hl3 { color: var(--green); }
+    .arch-diagram .hl4 { color: var(--orange); }
+
+    .btn {
+      display: inline-block;
+      background: var(--accent);
+      color: #000;
+      font-weight: 600;
+      font-size: 0.85rem;
+      padding: 0.5rem 1.25rem;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+    .btn:hover { opacity: 0.85; text-decoration: none !important; }
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+    }
+
+    .links-row {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin: 1rem 0 0;
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem 0;
+      color: var(--text-dim);
+      font-size: 0.85rem;
+    }
+    footer a { color: var(--accent); text-decoration: none; }
+
+    @media (max-width: 640px) {
+      header h1 { font-size: 1.5rem; }
+      .card { padding: 1.25rem; }
+      .status-grid { grid-template-columns: 1fr; }
+    }
+
+    .glow { box-shadow: 0 0 24px rgba(93, 173, 226, 0.08); }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <h1>NodeOps &times; CreateOS Skills Challenge</h1>
+    <p>Three deliverables for the CreateOS ecosystem</p>
+    <span class="badge">May 24&ndash;26, 2026</span>
+  </header>
+
+  <!-- Deliverable 1 -->
+  <div class="card glow">
+    <h2><span class="num">1</span> MCP Dependency Graph</h2>
+    <p>
+      Web-based visualization tool that renders MCP (Model Context Protocol) server
+      dependency graphs as interactive HTML. Built with a Go backend and JavaScript
+      frontend, deployed on CreateOS.
+    </p>
+    <ul>
+      <li><a href="https://dep-2db08d74-177e-44e0-b973-020e951e055c.tyzo.nodeops.app/" target="_blank">Live Demo</a></li>
+      <li><a href="https://github.com/adityachaudhary99/mcp-tool-deps" target="_blank">GitHub Repository</a></li>
+      <li>Interactive graph visualization of MCP tool dependencies</li>
+    </ul>
+  </div>
+
+  <!-- Deliverable 2 -->
+  <div class="card glow">
+    <h2><span class="num">2</span> opencode-createos Plugin</h2>
+    <p>
+      A curated <a href="https://opencode.ai" target="_blank">opencode</a> plugin
+      providing 7 high-level tools + 2 lifecycle hooks for CreateOS cloud platform
+      management &mdash; wrapping the CreateOS REST API into agent-friendly operations.
+    </p>
+
+    <div class="result-table" style="margin-top: 0.75rem;">
+      <table style="width:100%; border-collapse: collapse;">
+        <tr><th>Tool</th><th>Description</th><th>Status</th></tr>
+        <tr><td><code>createos_deploy</code></td><td>Create project + environment + deploy</td><td class="pass">E2E Passed</td></tr>
+        <tr><td><code>createos_list_projects</code></td><td>List all projects</td><td class="pass">E2E Passed</td></tr>
+        <tr><td><code>createos_get_project</code></td><td>Get project with latest deployment</td><td class="pass">E2E Passed</td></tr>
+        <tr><td><code>createos_set_env</code></td><td>Set environment variables</td><td class="pass">E2E Passed</td></tr>
+        <tr><td><code>createos_list_env</code></td><td>List environment variables</td><td class="pass">E2E Passed</td></tr>
+        <tr><td><code>createos_add_domain</code></td><td>Add custom domain</td><td class="pass">E2E Passed</td></tr>
+        <tr><td><code>createos_list_domains</code></td><td>List custom domains</td><td class="pass">E2E Passed</td></tr>
+      </table>
+    </div>
+
+    <div class="links-row">
+      <a class="btn btn-outline" href="https://github.com/adityachaudhary99/opencode-createos" target="_blank">GitHub</a>
+    </div>
+  </div>
+
+  <!-- Deliverable 3 -->
+  <div class="card glow">
+    <h2><span class="num">3</span> Netlify &rarr; CreateOS Migration Skill</h2>
+    <p>
+      A <a href="https://skills.sh" target="_blank">skills.sh</a>-compatible migration
+      skill for the <a href="https://github.com/NodeOps-app/skills" target="_blank">NodeOps Skills</a>
+      repository. Parses <code>netlify.toml</code>, maps build settings and environment
+      variables, flags incompatibilities, and deploys to CreateOS.
+    </p>
+
+    <div class="status-grid">
+      <div class="status-item">
+        <div class="label">E2E Test</div>
+        <div class="value">Passed</div>
+      </div>
+      <div class="status-item">
+        <div class="label">Project</div>
+        <div class="value">netlify-to-createos</div>
+      </div>
+      <div class="status-item">
+        <div class="label">Reference</div>
+        <div class="value">netlify-templates/next-netlify-starter</div>
+      </div>
+    </div>
+
+    <div class="links-row">
+      <a class="btn btn-outline" href="https://github.com/adityachaudhary99/netlify-to-createos" target="_blank">Skill Repo</a>
+      <a class="btn btn-outline" href="https://github.com/adityachaudhary99/skills" target="_blank">Fork</a>
+      <a class="btn btn-outline" href="https://github.com/NodeOps-app/skills/pull/20" target="_blank">PR #20</a>
+    </div>
+  </div>
+
+  <!-- Architecture -->
+  <div class="card glow">
+    <h2>Architecture</h2>
+    <div class="arch-diagram">
+      <span class="hl">opencode</span>  ──plugin──▶  <span class="hl2">opencode-createos</span>  ──REST──▶  <span class="hl3">CreateOS API</span>
+                                        │                        https://api-createos.nodeops.network/v1
+                                        │
+                                        ├── <span class="hl4">createos_deploy</span>      POST /projects
+                                        ├── <span class="hl4">createos_list_projects</span>  GET  /projects
+                                        ├── <span class="hl4">createos_get_project</span>   GET  /projects/:id
+                                        ├── <span class="hl4">createos_set_env</span>       PUT  /projects/:id/environments/:eid
+                                        ├── <span class="hl4">createos_list_env</span>       GET  /projects/:id/environments
+                                        ├── <span class="hl4">createos_add_domain</span>    POST /projects/:id/domains
+                                        └── <span class="hl4">createos_list_domains</span>   GET  /projects/:id/domains
+
+      <span class="hl">skills.sh</span>  ──skill──▶  <span class="hl2">netlify-to-createos</span>  ──MCP──▶  <span class="hl3">CreateOS MCP</span>
+                                        ──REST──▶  <span class="hl3">CreateOS API</span>
+                                        ──plugin─▶ <span class="hl2">opencode-createos</span>
+    </div>
+  </div>
+
+  <!-- End-to-End Test Results -->
+  <div class="card glow">
+    <h2>End-to-End Test Results</h2>
+    <p style="margin-bottom: 1rem;">
+      All 7 plugin tools tested against the live CreateOS API
+      (<code>https://api-createos.nodeops.network/v1</code>).
+    </p>
+    <table class="result-table">
+      <tr><th>Test</th><th>Result</th><th>Details</th></tr>
+      <tr><td>List Projects</td><td class="pass">PASS</td><td>Returns paginated project list</td></tr>
+      <tr><td>Deploy (Upload)</td><td class="pass">PASS</td><td>Project + environment created</td></tr>
+      <tr><td>Get Project</td><td class="pass">PASS</td><td>Full project detail with deployment info</td></tr>
+      <tr><td>Set Environment Vars</td><td class="pass">PASS</td><td>Stored in <code>settings.runEnvs</code></td></tr>
+      <tr><td>List Environment Vars</td><td class="pass">PASS</td><td>Returns keys (values redacted)</td></tr>
+      <tr><td>Add Domain</td><td class="pass">PASS</td><td>Returns A record target <code>138.199.135.245</code></td></tr>
+      <tr><td>List Domains</td><td class="pass">PASS</td><td>Returns domain list with DNS records</td></tr>
+    </table>
+
+    <p style="margin-top: 1rem;">
+      <strong>Netlify Migration E2E:</strong>
+      <span style="color: var(--green); font-weight: 600;">PASSED</span>
+      &mdash; Parsed <code>netlify-templates/next-netlify-starter</code>,
+      created matching CreateOS project with all settings, verified project + environment.
+    </p>
+  </div>
+
+  <!-- Repositories -->
+  <div class="card glow">
+    <h2>Repositories</h2>
+    <ul>
+      <li><a href="https://github.com/adityachaudhary99/netlify-to-createos" target="_blank">github.com/adityachaudhary99/netlify-to-createos</a> &mdash; Migration skill source</li>
+      <li><a href="https://github.com/adityachaudhary99/opencode-createos" target="_blank">github.com/adityachaudhary99/opencode-createos</a> &mdash; opencode plugin</li>
+      <li><a href="https://github.com/adityachaudhary99/skills" target="_blank">github.com/adityachaudhary99/skills</a> &mdash; Fork of NodeOps-app/skills (PR incoming)</li>
+      <li><a href="https://github.com/adityachaudhary99/mcp-tool-deps" target="_blank">github.com/adityachaudhary99/mcp-tool-deps</a> &mdash; MCP Dependency Graph</li>
+      <li><a href="https://github.com/NodeOps-app/skills" target="_blank">github.com/NodeOps-app/skills</a> &mdash; Upstream NodeOps skills repo</li>
+    </ul>
+  </div>
+
+  <div class="card glow">
+    <h2>Live Deployment</h2>
+    <p>
+      This very page is deployed using the <strong>opencode-createos</strong> plugin!
+      Project <code>createos-skills-demo</code> was created via
+      <code>createos_deploy</code> against the live CreateOS API.
+    </p>
+    <div class="status-grid">
+      <div class="status-item">
+        <div class="label">Plugin</div>
+        <div class="value">opencode-createos v1.0.0</div>
+      </div>
+      <div class="status-item">
+        <div class="label">Project ID</div>
+        <div class="value">9b2ac038-2e2d-43cc-b54b-32eabb959c86</div>
+      </div>
+      <div class="status-item">
+        <div class="label">Type</div>
+        <div class="value">upload</div>
+      </div>
+      <div class="status-item">
+        <div class="label">Runtime</div>
+        <div class="value">node:20</div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <a href="https://nodeops.network" target="_blank">NodeOps</a> CreateOS Skills Challenge &middot;
+    <a href="https://x.com/thecalendre" target="_blank">@cal</a>
+  </footer>
+
+</div>
+</body>
+</html>
